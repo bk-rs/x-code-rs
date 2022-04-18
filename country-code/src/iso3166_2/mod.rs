@@ -37,21 +37,19 @@ macro_rules! country_subdivision_code {
             type Err = ::alloc::boxed::Box::<str>;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                use ::alloc::boxed::Box;
-
                 let country_code_s = s.chars().take_while(|x| x != &'-' && x != &'_')
                                                 .collect::<::alloc::string::String>();
                 let country_code = country_code_s.parse::<$country_code_ty>()
-                                                    .map_err(|_| Box::<str>::from(alloc::format!("Invalid country_code [{}]", country_code_s)))?;
+                                                    .map_err(|_| ::alloc::boxed::Box::<str>::from(alloc::format!("Invalid country_code [{}]", country_code_s)))?;
 
                 if country_code != Self::COUNTRY_CODE {
-                    return Err(Box::<str>::from(alloc::format!("Invalid [{}]", s)))
+                    return Err(::alloc::boxed::Box::<str>::from(alloc::format!("Invalid [{}]", s)))
                 }
 
                 let subdivision_code_s = if s.len() > country_code_s.len() + 1 {
                     &s[country_code_s.len() + 1..]
                 } else {
-                    return Err(Box::<str>::from(alloc::format!("Invalid [{}]", s)))
+                    return Err(::alloc::boxed::Box::<str>::from(alloc::format!("Invalid [{}]", s)))
                 };
 
                 match subdivision_code_s {
@@ -132,15 +130,15 @@ impl ::core::str::FromStr for SubdivisionCode {
     type Err = ::alloc::boxed::Box<str>;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        #[allow(unused_imports)]
-        use ::alloc::boxed::Box;
-
         let country_code_s = s
             .chars()
             .take_while(|x| x != &'-' && x != &'_')
             .collect::<::alloc::string::String>();
         let country_code = country_code_s.parse::<CountryCode>().map_err(|_| {
-            Box::<str>::from(alloc::format!("Invalid country_code [{}]", country_code_s))
+            ::alloc::boxed::Box::<str>::from(alloc::format!(
+                "Invalid country_code [{}]",
+                country_code_s
+            ))
         })?;
 
         match country_code {
@@ -156,7 +154,10 @@ impl ::core::str::FromStr for SubdivisionCode {
                 let subdivision_code_s = if s.len() > country_code_s.len() + 1 {
                     &s[country_code_s.len() + 1..]
                 } else {
-                    return Err(Box::<str>::from(alloc::format!("Invalid [{}]", s)));
+                    return Err(::alloc::boxed::Box::<str>::from(alloc::format!(
+                        "Invalid [{}]",
+                        s
+                    )));
                 };
 
                 Ok(Self::Other(country, subdivision_code_s.into()))

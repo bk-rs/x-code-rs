@@ -129,17 +129,15 @@ macro_rules! language_tag {
             type Err = ::alloc::boxed::Box::<str>;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                use ::alloc::boxed::Box;
-
                 let language_code_s = s.chars().take_while(|x| x != &'-' && x != &'_')
                                                 .collect::<::alloc::string::String>();
                 let language_code = language_code_s.parse::<$language_code_ty>()
-                                                    .map_err(|_| Box::<str>::from(alloc::format!("Invalid language_code [{}]", language_code_s)))?;
+                                                    .map_err(|_| ::alloc::boxed::Box::<str>::from(alloc::format!("Invalid language_code [{}]", language_code_s)))?;
 
                 let country_code = if s.len() > language_code_s.len() + 1 {
                     let country_code_s = &s[language_code_s.len() + 1..];
                     let country_code = country_code_s.parse::<$country_code_ty>()
-                                                    .map_err(|_| Box::<str>::from(alloc::format!("Invalid country_code [{}]", country_code_s)))?;
+                                                    .map_err(|_| ::alloc::boxed::Box::<str>::from(alloc::format!("Invalid country_code [{}]", country_code_s)))?;
                     Some(country_code)
                 } else {
                     None
