@@ -12,4 +12,15 @@ keywords = []
 categories = []
 readme = "README.md"
 
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["std"]
+std = []
+
 [dependencies]
+serde = { version = "1.0", default-features = false, features = ["alloc"], optional = true }
+
+[dev-dependencies]
+csv = { version = "1.1" }
