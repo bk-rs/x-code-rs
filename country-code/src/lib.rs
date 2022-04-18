@@ -97,3 +97,4 @@ pub mod iso3166_1;
 pub mod iso3166_2;
 
 pub use iso3166_1::alpha_2::CountryCode;
+pub use iso3166_2::SubdivisionCode;

@@ -131,7 +131,7 @@ macro_rules! language_tag {
             fn from_str(s: &str) -> Result<Self, Self::Err> {
                 use ::alloc::boxed::Box;
 
-                let language_code_s = s.chars().take_while(|x| x != &char::from('-') && x != &char::from('_'))
+                let language_code_s = s.chars().take_while(|x| x != &'-' && x != &'_')
                                                 .collect::<::alloc::string::String>();
                 let language_code = language_code_s.parse::<$language_code_ty>()
                                                     .map_err(|_| Box::<str>::from(alloc::format!("Invalid language_code [{}]", language_code_s)))?;
