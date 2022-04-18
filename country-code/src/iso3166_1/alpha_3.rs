@@ -281,7 +281,7 @@ mod tests {
         let mut n = 0;
         for record in rdr.records() {
             let record = record.unwrap();
-            let code = record[0].to_string();
+            let code = &record[0];
             assert_eq!(code.parse::<CountryCode>().unwrap().to_string(), code);
             n += 1;
         }

@@ -122,8 +122,8 @@ mod tests {
         let mut n = 0;
         for record in rdr.records().skip(2) {
             let record = record.unwrap();
-            let name = record[0].to_string();
-            let code = match name.as_str() {
+            let name = &record[0];
+            let code = match name {
                 "Asia" => "AS",
                 "Africa" => "AF",
                 "North America" => "NA",
