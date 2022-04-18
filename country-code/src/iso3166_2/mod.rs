@@ -1,11 +1,11 @@
-#![cfg_attr(not(feature = "std"), no_std)]
-
-extern crate alloc;
+//! [ISO 3166-2 - Wikipedia](https://en.wikipedia.org/wiki/ISO_3166-2)
 
 //
 #[macro_export]
-macro_rules! country_code {
+macro_rules! country_subdivision_code {
     (
+        $country_code_ty:ty, $country_code_val:expr;
+
         $( #[$meta:meta] )*
         $pub:vis enum $name:ident {
             $(
@@ -23,6 +23,8 @@ macro_rules! country_code {
 
         //
         impl $name {
+            pub const COUNTRY_CODE: $country_code_ty = $country_code_val;
+
             pub const VARS: &'static [$name] = &[
                 $(
                     $name::$variant,
@@ -32,10 +34,27 @@ macro_rules! country_code {
 
         //
         impl ::core::str::FromStr for $name {
-            type Err = ::core::convert::Infallible;
+            type Err = ::alloc::boxed::Box::<str>;
 
             fn from_str(s: &str) -> Result<Self, Self::Err> {
-                match s {
+                use ::alloc::boxed::Box;
+
+                let country_code_s = s.chars().take_while(|x| x != &char::from('-') && x != &char::from('_'))
+                                                .collect::<::alloc::string::String>();
+                let country_code = country_code_s.parse::<$country_code_ty>()
+                                                    .map_err(|_| Box::<str>::from(alloc::format!("Invalid country_code [{}]", country_code_s)))?;
+
+                if country_code != Self::COUNTRY_CODE {
+                    return Err(Box::<str>::from(alloc::format!("Invalid [{}]", s)))
+                }
+
+                let subdivision_code_s = if s.len() > country_code_s.len() + 1 {
+                    &s[country_code_s.len() + 1..]
+                } else {
+                    return Err(Box::<str>::from(alloc::format!("Invalid [{}]", s)))
+                };
+
+                match subdivision_code_s {
                     $(
                         ::core::stringify!($variant) => Ok(Self::$variant),
                     )+
@@ -47,11 +66,13 @@ macro_rules! country_code {
         //
         impl ::core::fmt::Display for $name {
             fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
+                use alloc::string::ToString as _;
+
                 match self {
                     $(
-                        Self::$variant => ::core::write!(f, "{}", ::core::stringify!($variant)),
+                        Self::$variant => ::core::write!(f, "{}-{}", $name::COUNTRY_CODE.to_string(), ::core::stringify!($variant)),
                     )+
-                    Self::Other(s) => ::core::write!(f, "{}", s)
+                    Self::Other(s) => ::core::write!(f, "{}-{}", $name::COUNTRY_CODE.to_string(), s)
                 }
             }
         }
@@ -92,8 +113,5 @@ macro_rules! country_code {
     };
 }
 
-//
-pub mod iso3166_1;
-pub mod iso3166_2;
-
-pub use iso3166_1::alpha_2::CountryCode;
+pub mod cn;
+pub mod us;
