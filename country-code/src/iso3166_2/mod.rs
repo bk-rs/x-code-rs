@@ -81,6 +81,12 @@ macro_rules! country_subdivision_code {
         }
 
         //
+        impl_partial_eq_str! { str, $name }
+        impl_partial_eq_str! { &'a str, $name }
+        impl_partial_eq_str! { ::alloc::borrow::Cow<'a, str>, $name }
+        impl_partial_eq_str! { ::alloc::string::String, $name }
+
+        //
         #[cfg(feature = "serde")]
         impl<'de> ::serde::Deserialize<'de> for $name {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -113,6 +119,9 @@ macro_rules! country_subdivision_code {
 pub mod cn;
 pub mod us;
 
+pub use cn::CountrySubdivisionCode as CNSubdivisionCode;
+pub use us::CountrySubdivisionCode as USSubdivisionCode;
+
 //
 //
 //
@@ -120,8 +129,8 @@ use crate::iso3166_1::alpha_2::CountryCode;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum SubdivisionCode {
-    CN(cn::CountrySubdivisionCode),
-    US(us::CountrySubdivisionCode),
+    CN(CNSubdivisionCode),
+    US(USSubdivisionCode),
     Other(CountryCode, ::alloc::boxed::Box<str>),
 }
 
@@ -143,11 +152,11 @@ impl ::core::str::FromStr for SubdivisionCode {
 
         match country_code {
             CountryCode::CN => {
-                let subdivision = s.parse::<cn::CountrySubdivisionCode>()?;
+                let subdivision = s.parse::<CNSubdivisionCode>()?;
                 Ok(Self::CN(subdivision))
             }
             CountryCode::US => {
-                let subdivision = s.parse::<us::CountrySubdivisionCode>()?;
+                let subdivision = s.parse::<USSubdivisionCode>()?;
                 Ok(Self::US(subdivision))
             }
             country => {
@@ -176,6 +185,12 @@ impl ::core::fmt::Display for SubdivisionCode {
         }
     }
 }
+
+//
+impl_partial_eq_str! { str, SubdivisionCode }
+impl_partial_eq_str! { &'a str, SubdivisionCode }
+impl_partial_eq_str! { ::alloc::borrow::Cow<'a, str>, SubdivisionCode }
+impl_partial_eq_str! { ::alloc::string::String, SubdivisionCode }
 
 //
 #[cfg(feature = "serde")]

@@ -1,7 +1,6 @@
 //! [ISO 3166-1 alpha-2 - Wikipedia](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 
-use crate::country_code;
-
+//
 country_code! {
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub enum CountryCode {
@@ -281,5 +280,13 @@ mod tests {
         }
 
         assert_eq!(CountryCode::VARS.len(), n);
+
+        //
+        assert_eq!(CountryCode::US, "US");
+
+        match CountryCode::US {
+            x if x == "US" => {}
+            _ => panic!(),
+        }
     }
 }

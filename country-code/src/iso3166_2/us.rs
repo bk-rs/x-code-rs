@@ -1,7 +1,8 @@
 //! [ISO 3166-2:US](https://en.wikipedia.org/wiki/ISO_3166-2:US)
 
-use crate::{country_subdivision_code, iso3166_1::alpha_2::CountryCode};
+use crate::iso3166_1::alpha_2::CountryCode;
 
+//
 country_subdivision_code! {
     CountryCode, CountryCode::US;
 

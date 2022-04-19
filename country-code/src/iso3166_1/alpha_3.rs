@@ -1,7 +1,6 @@
 //! [ISO 3166-1 alpha-3 - Wikipedia](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3)
 
-use crate::country_code;
-
+//
 country_code! {
     #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub enum CountryCode {
