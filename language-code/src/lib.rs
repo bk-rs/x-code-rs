@@ -61,7 +61,7 @@ macro_rules! language_code {
         //
         impl ::core::default::Default for $name {
             fn default() -> Self {
-                Self::Other("".into())
+                Self::en
             }
         }
 
@@ -159,6 +159,12 @@ macro_rules! language_tag {
         }
 
         //
+        impl_partial_eq_str! { str, $name }
+        impl_partial_eq_str! { &'a str, $name }
+        impl_partial_eq_str! { ::alloc::borrow::Cow<'a, str>, $name }
+        impl_partial_eq_str! { ::alloc::string::String, $name }
+
+        //
         #[cfg(feature = "serde")]
         impl<'de> ::serde::Deserialize<'de> for $name {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -182,6 +188,19 @@ macro_rules! language_tag {
                 use ::alloc::string::ToString as _;
 
                 self.to_string().serialize(serializer)
+            }
+        }
+    };
+}
+
+//
+#[macro_export]
+macro_rules! impl_partial_eq_str {
+    ($lhs:ty, $rhs: ty) => {
+        #[allow(unused_lifetimes)]
+        impl<'a> ::core::cmp::PartialEq<$lhs> for $rhs {
+            fn eq(&self, other: &$lhs) -> bool {
+                ::core::cmp::PartialEq::eq(&::alloc::format!("{}", self)[..], &other[..])
             }
         }
     };
